@@ -306,14 +306,16 @@ class RewardModelWrapper(gym.Wrapper):
         act_t = torch.as_tensor(act, dtype=torch.float32).to(self.device)
         new_r_t = self.model(p_obs_t, act_t)
         new_r = float(new_r_t.item())
+        new_r *= self.reward_scale        
 
+        #new_r = 0.8 * r + 0.2 * new_r          
         # track reward for normalization
         self._reward_window.append(new_r)
         if len(self._reward_window) == self._reward_window.maxlen:
             mu = np.mean(self._reward_window)
             std = np.std(self._reward_window)
             new_r -= mu
-            new_r /= std
+            new_r /= max(std, 1e-9)
             self._metrics_queue.put((self.KEY_REWARD_MU, mu))
             self._metrics_queue.put((self.KEY_REWARD_STD, std))
 
