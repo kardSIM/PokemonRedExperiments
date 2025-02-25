@@ -21,7 +21,7 @@ log = logging.getLogger("rlhf")
 # how many transitions to store in episode
 EPISODE_STEPS = 50
 # probability to start episode recording
-START_PROB = 0.00005
+START_PROB = 0.0001
 LABELS_FILE_NAME = "labels.json"
 
 
@@ -315,7 +315,7 @@ class RewardModelWrapper(gym.Wrapper):
             mu = np.mean(self._reward_window)
             std = np.std(self._reward_window)
             new_r -= mu
-            new_r /= max(std, 1e-9)
+            new_r /= max(std, 1e-8)
             self._metrics_queue.put((self.KEY_REWARD_MU, mu))
             self._metrics_queue.put((self.KEY_REWARD_STD, std))
 
